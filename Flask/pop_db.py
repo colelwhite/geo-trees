@@ -146,7 +146,7 @@ root.withdraw()
 treefile = "D:\\Winter2019\\Elective\\Project\\data2\\db_geometries\\tree_sample_2000.shp"
 
 htfile = "D:\\Winter2019\\Elective\\Project\\data2\\db_tables\\ht_class.csv"
-tabfile = "D:\\Winter2019\\Elective\\Project\\data2\\db_tables\\treetab.csv"
+tabfile = "D:\\Winter2019\\Elective\\Project\\data2\\db_tables\\treeta2.csv"
 ownerfile = "D:\\Winter2019\\Elective\\Project\\data2\\db_tables\\owner.csv"
 healthfile = "D:\\Winter2019\\Elective\\Project\\data2\\db_tables\\health.csv"
 ohfile = "D:\\Winter2019\\Elective\\Project\\data2\\db_tables\\oh_util.csv"
@@ -330,9 +330,9 @@ session.commit()
 
 for count, record in enumerate(tab_records):
     tab = TreeTab()
-    tab.common_name = record[1]
-    tab.genus = record[2]
-    tab.species = record[3]
+    tab.common_name = record[0]
+    tab.genus = record[1]
+    tab.species = record[2]
     session.add(tab)
 session.commit()
 
