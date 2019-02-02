@@ -32,7 +32,7 @@ from tkinter import filedialog
 from tkinter import Tk
 
 # Connect to the database called chapter11 using SQLAlchemy functions
-conn_string = 'postgresql://postgres:word@localhost:5432/guelph_tree'
+conn_string = 'postgresql://postgres:DeerHoof1@localhost:5433/guelph_tree'
 engine = create_engine(conn_string, echo=True)
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -139,11 +139,46 @@ class Tree(Base):
     longitude = Column(Float)
     geom = Column(Geometry(geometry_type='POINT', srid=4326))
 
+class CityBound(Base):
+    __tablename__ = 'city_bound'
+    id = Column(Integer, primary_key=True)
+    geom = Column(Geometry(geometry_type='MULTIPOLYGON', srid=4326))
+
+class Ward(Base):
+    __tablename__ = 'ward'
+    ward_num = Column(Integer, primary_key=True, autoincrement=False)
+    geom = Column(Geometry(geometry_type='MULTIPOLYGON', srid=4326))
+
+class NeighbourhoodGroup(Base):
+    __tablename__ = 'neighbourhood_group'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    geom = Column(Geometry(geometry_type='MULTIPOLYGON', srid=4326))
+
+class Street(Base):
+    __tablename__ = 'street'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    geom = Column(Geometry(geometry_type='MULTILINESTRING', srid=4326))
+
+class WaterCourse(Base):
+    __tablename__ = 'water_course'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    geom = Column(Geometry(geometry_type='MULTILINESTRING', srid=4326))
+
 # Initiate the Tkinter module and withdraw the console it generates
 root = Tk()
 root.withdraw()
 
 treefile = "D:\\Winter2019\\Elective\\Project\\data2\\db_geometries\\tree_sample_2000.shp"
+cityfile = "D:\\Winter2019\\Elective\\Project\\data2\\db_geometries\\CityBoundary.shp"
+wardfile = "D:\\Winter2019\\Elective\\Project\\data2\\db_geometries\\Wards.shp"
+hoodfile = "D:\\Winter2019\\Elective\\Project\\data2\\db_geometries\\Neighbourhood_Groups.shp"
+riverfile = "D:\\Winter2019\\Elective\\Project\\data2\\db_geometries\\Watercourse.shp"
+
+
+streetfile = "D:\\Winter2019\\Elective\\Project\\data2\\db_geometries\\Streets.shp"
 
 htfile = "D:\\Winter2019\\Elective\\Project\\data2\\db_tables\\ht_class.csv"
 tabfile = "D:\\Winter2019\\Elective\\Project\\data2\\db_tables\\treeta2.csv"
@@ -209,6 +244,25 @@ tree_shapefile = shapefile.Reader(treefile)
 tree_shapes = tree_shapefile.shapes()
 tree_records = tree_shapefile.records()
 
+city_shapefile = shapefile.Reader(cityfile)
+city_shapes = city_shapefile.shapes()
+city_records = city_shapefile.records()
+
+street_shapefile = shapefile.Reader(streetfile)
+street_shapes = street_shapefile.shapes()
+street_records = street_shapefile.records()
+
+ward_shapefile = shapefile.Reader(wardfile)
+ward_shapes = ward_shapefile.shapes()
+ward_records = ward_shapefile.records()
+
+hood_shapefile = shapefile.Reader(hoodfile)
+hood_shapes = hood_shapefile.shapes()
+hood_records = hood_shapefile.records()
+
+river_shapefile = shapefile.Reader(riverfile)
+river_shapes = river_shapefile.shapes()
+river_records = river_shapefile.records()
 
 # Read the csvs
 with open(spfile, newline='') as csvfile:
@@ -364,9 +418,62 @@ for count, record in enumerate(tree_records):
     if count % 10 == 0:
         session.commit()
 session.commit()
-#
 
+for count, record in enumerate(city_records):
+    city = CityBound()
+    city_geo = city_shapes[count]
+    gshape = pygeoif.MultiPolygon(pygeoif.geometry.as_shape(city_geo))
+    city.geom = 'SRID=4326;{0}'.format(gshape.wkt)
 
+    session.add(city)
+    session.commit()
+
+session.commit()
+
+for count, record in enumerate(ward_records):
+    ward = Ward()
+    ward.ward_num = record[1]
+
+    ward_geo = ward_shapes[count]
+    gshape = pygeoif.MultiPolygon(pygeoif.geometry.as_shape(ward_geo))
+    ward.geom = 'SRID=4326;{0}'.format(gshape.wkt)
+    session.add(ward)
+
+    session.commit()
+session.commit()
+
+for count, record in enumerate(hood_records):
+    hood = NeighbourhoodGroup()
+    hood.name = record[2]
+
+    hood_geo = hood_shapes[count]
+    gshape = pygeoif.MultiPolygon(pygeoif.geometry.as_shape(hood_geo))
+    hood.geom = 'SRID=4326;{0}'.format(gshape.wkt)
+    session.add(hood)
+
+    session.commit()
+session.commit()
+
+for count, record in enumerate(street_records):
+    street = Street()
+    street.name = record[1]
+    street_geo = street_shapes[count]
+    gshape = pygeoif.MultiLineString(pygeoif.geometry.as_shape(street_geo))
+    street.geom = 'SRID=4326;{0}'.format(gshape.wkt)
+    session.add(street)
+
+    if count % 10 == 0:
+        session.commit()
+session.commit()
+
+for count, record in enumerate(river_records):
+    river = WaterCourse()
+    river_geo = river_shapes[count]
+    gshape = pygeoif.MultiLineString(pygeoif.geometry.as_shape(river_geo))
+    river.geom = 'SRID=4326;{0}'.format(gshape.wkt)
+    session.add(river)
+    session.commit()
+session.commit()
 
 #
 # # Close the session and dispose of the engine connection to the database

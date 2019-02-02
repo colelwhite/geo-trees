@@ -1,12 +1,12 @@
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~‧͙⁺˚*･༓☾　　☽༓･*˚⁺‧͙~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Name: create_db.py
-#
-# Create new PostgreSQL DB with the PostGIS extension. Create models to hold
-# the data, based on the schema design in PostgreSQL DB Documentation.xlsx.
-#  Next, add spatial (shp) and tabular (csv) data using pop_db.py
-# Nicole White January 2019
-#
-#~~~~~~~~~~~~~~~~~~~~~‧͙⁺˚*･༓☾　　☽༓･*˚⁺‧͙~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~‧͙⁺˚*･༓☾　　☽༓･*˚⁺‧͙~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# Name: create_db.py                                                           #
+#                                                                              #
+# Create new PostgreSQL DB with the PostGIS extension. Create models to hold   #
+# the data, based on the schema design in PostgreSQL DB Documentation.xlsx.    #
+#  Next, add spatial (shp) and tabular (csv) data using pop_db.py              #
+# Nicole White January 2019                                                    #
+#                                                                              #
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~‧͙⁺˚*･༓☾　　☽༓･*˚⁺‧͙~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 
 
@@ -18,7 +18,7 @@ from geoalchemy2 import Geometry
 from sqlalchemy.ext.declarative import declarative_base
 
 # Define the DB
-engine = create_engine('postgresql://postgres:password@localhost:5432/guelph_tree',
+engine = create_engine('postgresql://postgres:DeerHoof1@localhost:5433/guelph_tree',
                echo=True)
 
 # If the DB needs to be dropped and re-created (otherwise leave commented
@@ -139,6 +139,34 @@ if not database_exists(engine.url):
         latitude = Column(Float)
         longitude = Column(Float)
         geom = Column(Geometry(geometry_type='POINT', srid=4326))
+
+    class CityBound(Base):
+        __tablename__ = 'city_bound'
+        id = Column(Integer, primary_key=True)
+        geom = Column(Geometry(geometry_type='MULTIPOLYGON', srid=4326))
+
+    class Ward(Base):
+        __tablename__ = 'ward'
+        ward_num = Column(Integer, primary_key=True, autoincrement=False)
+        geom = Column(Geometry(geometry_type='MULTIPOLYGON', srid=4326))
+
+    class NeighbourhoodGroup(Base):
+        __tablename__ = 'neighbourhood_group'
+        id = Column(Integer, primary_key=True)
+        name = Column(String)
+        geom = Column(Geometry(geometry_type='MULTIPOLYGON', srid=4326))
+
+    class Street(Base):
+        __tablename__ = 'street'
+        id = Column(Integer, primary_key=True)
+        name = Column(String)
+        geom = Column(Geometry(geometry_type='MULTILINESTRING', srid=4326))
+
+    class WaterCourse(Base):
+        __tablename__ = 'water_course'
+        id = Column(Integer, primary_key=True)
+        name = Column(String)
+        geom = Column(Geometry(geometry_type='MULTILINESTRING', srid=4326))
 
     # Make the DB tables from the models created above. If the tables already
     # exist, drop them and recreate them.
