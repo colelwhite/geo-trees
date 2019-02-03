@@ -14,17 +14,15 @@
 
       <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.css" />
       <link href="https://fonts.googleapis.com/css?family=Playball" rel="stylesheet">
-      <!-- <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
-      <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
       <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous"> -->
 
-      <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
        integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
        crossorigin=""/>
 
       <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
         integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
-        crossorigin=""></script> -->
+        crossorigin=""></script>
 
       <link rel="stylesheet" type="text/css" href="../static/css/main.css" />
   </head>
@@ -43,7 +41,7 @@
         <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">REST API Reference</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Visualization</a>
+        <a class="nav-link" id="vis-tab" data-toggle="tab" href="#vis" role="tab" aria-controls="vis" aria-selected="false">Visualization</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Technical Documentation</a>
@@ -52,10 +50,7 @@
 
 
     <div class="tab-content" id="myTabContent">
-      <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-
-
-
+      <div class="tab-pane fade" id="intro" role="tabpanel" aria-labelledby="intro-tab">
         <p class="body-text">
           Bleh
           </p>
@@ -63,7 +58,22 @@
 
 
       </div>
-      <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">Blah 2</div>
+      <div class="tab-pane fade show active" id="vis" role="tabpanel" aria-labelledby="vis-tab">Blah 2
+
+<div id="map" style="width: 600px; height: 400px;"></div>
+
+<form method="post" class="form">
+  <h3>{{form.description}}</h3>
+  {{form.selections(class_='form-control',placeholder="")}}
+  <br>
+  <input type="submit" value="Find Data">
+
+</form>
+
+      </div>
+
+
+
       <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">Blah 3</div>
     </div>
 </div>
@@ -71,6 +81,28 @@
 
     <script src="../static/js/jquery-3.3.1.min.js"></script>
     <script src="../static/js/bootstrap.min.js"></script>
-    <!-- <script src = "js/main.js"></script> -->
+    <script src = "../static/js/main.js"></script>
+
+<script>
+    var themap = L.map('map').setView([ {{form.latitude}},{{form.longitude}}], 13);
+    	L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    	subdomains: 'abcd',
+    	minZoom: 1,
+    	maxZoom: 18,
+    	ext: 'png'
+    	}).addTo(themap);
+    	L.marker([ {{form.latitude}},{{form.longitude}}]).addTo(themap)
+    		.bindPopup("{{form.popup}}").openPopup();
+    	var popup = L.popup();
+    	function showMapClick(e) {
+    		popup
+    			.setLatLng(e.latlng)
+    			.setContent("You clicked the map at " + e.latlng.toString())
+    			.openOn(themap);
+    	}
+    	themap.on('click', showMapClick);
+    </script>
+
 	</body>
 </html>
