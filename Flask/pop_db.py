@@ -32,7 +32,7 @@ from tkinter import filedialog
 from tkinter import Tk
 
 # Connect to the database called chapter11 using SQLAlchemy functions
-conn_string = 'postgresql://postgres:DeerHoof1@localhost:5433/guelph_tree'
+conn_string = 'postgresql://postgres:postgres@localhost:5433/guelph_tree'
 engine = create_engine(conn_string, echo=True)
 Session = sessionmaker(bind=engine)
 session = Session()

@@ -11,12 +11,11 @@ inner join species as s on tt.species = s.id
 inner join family as f on g.family = f.id
 where tr.tree_id = 1;
 
--- Get health of all ash (Fraxinus) trees in the database
-select h.description as "Tree Condition", t.address as "Tree Location" from health as h
-inner join tree as t on t.health = id
-inner join tree_tab as tt on tt.common_name = name
-inner join genus as g on tt.genus = g.id
-where g.description = 'Fraxinus';
+-- All maples geom
+select tr.geom from tree as tr
+inner join tree_tab as tt on tt.common_name = tr.name
+inner join genus as g on g.id = tt.genus
+where g.description = 'Acer';
 
 -- Get health of all ash (Fraxinus) trees in the database
 select h.description as "Tree Condition", t.address as "Tree Location" from health as h
@@ -44,3 +43,10 @@ inner join water_course as wc on ST_DWithin(tr.geom::geography, wc.geom::geograp
 
 -- Check the projection of a spatial table
 SELECT Find_SRID('public', 'water_course', 'geom');
+
+-- Identify areas of poor tree health - sort of works
+SELECT ST_ConcaveHull(ST_Collect(tr.geom),0.80,true)
+from tree as tr
+join health as h on h.id = tr.health
+where h.description in ('Poor', 'Dead');
+
