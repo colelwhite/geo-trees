@@ -16,8 +16,13 @@ h3 {
 }
 
 .body-text {
-  
+
 }
 .nav-tabs {
 
+}
+
+#map {
+  width: 100%;
+  height: 450px;
 }

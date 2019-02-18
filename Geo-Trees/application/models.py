@@ -12,7 +12,7 @@ from sqlalchemy import create_engine         # Manage PostgreSQL session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, ForeignKey, Float
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, joinedload
 
 from geoalchemy2 import Geometry            # Process geom columns
 

@@ -10,7 +10,7 @@
 import flask
 app = flask.Flask(__name__)
 
-conn_string = 'postgresql://postgres:DeerHoof1@localhost:5433/guelph_tree'
+conn_string = 'postgresql://postgres:postgres@localhost:5433/guelph_tree'
 app.config['SQLALCHEMY_DATABASE_URI'] = conn_string
 app.config['SECRET_KEY'] = '6xvPzkqdpM9VaiCA0cqN'
 app.config['DEBUG'] = True
