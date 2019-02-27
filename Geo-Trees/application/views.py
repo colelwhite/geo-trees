@@ -13,12 +13,22 @@ from .models import *
 import geoalchemy2,shapely
 from geoalchemy2.shape import to_shape
 
+from webargs import fields
+from webargs.flaskparser import use_args, use_kwargs
+
+# URL arguments for the tree resource
+tree_args = {"ward": fields.Int(required=False),
+             "genus": fields.String(required=False)}
+
+# @app.route("/hey")
+# @use_args(hello_args)
+# def index(args):
+#     return "Hello " + args["name"]
+
 # Redirect to the geo-trees url
 @app.route('/', methods=["GET"])
 def home():
     return redirect(url_for('GeoTrees'))
-
-
 
 # Redirect from the home url to the API's defined base url
 # @app.route('/', methods=['GET'])
@@ -33,15 +43,55 @@ def get_endpoints():
 
 # Get all trees
 @app.route('/tree_inv/api/v0.1/tree', methods=['GET'])
-def get_trees():
-	trees = session.query(Tree).all()
+@use_kwargs(tree_args) # Inject the url arguments if there are any
 
-	data = [{"type": "Feature",
-	"properties":{"name":tree.name, "id":tree.tree_id},
-	"geometry":{"type":"Point",
-	"coordinates":[tree.longitude, tree.latitude]},
-	}  for tree in trees]
-	return jsonify({"type": "FeatureCollection","features":data})
+def get_trees(**kwargs):
+
+    # If ward has been specified, get only trees whose geometry falls within
+    # that ward
+    if 'ward' in kwargs.keys():
+        ward = session.query(Ward).get(kwargs['ward'])
+        filtr = Tree.geom.ST_Intersects(ward.geom)
+        print(filtr)
+        trees = session.query(Tree).filter(filtr).all()
+
+    if 'genus' in kwargs.keys():
+        print('genus yes')
+
+        genus = (
+        session.query(Genus)
+        .filter(Genus.description == kwargs['genus'])
+        )
+
+        f = Genus.description == kwargs['genus']
+
+        trees = (
+        session.query(Tree)
+        .join(TreeTab, Tree.name == TreeTab.common_name)
+        .join(Genus, TreeTab.genus == Genus.id)
+        .filter(f).all()
+        )
+
+    if trees != None:
+    	data = [{"type": "Feature",
+    	"properties":{"name":tree.name, "id":tree.tree_id},
+    	"geometry":{"type":"Point",
+    	"coordinates":[tree.longitude, tree.latitude]},
+    	}  for tree in trees]
+    	return jsonify({"type": "FeatureCollection","features":data})
+
+    # If no url arguments have been supplied, return the entire collection
+    else:
+        print('none')
+        print(kwargs)
+        trees = session.query(Tree).all()
+
+        data = [{"type": "Feature",
+        "properties":{"name":tree.name, "id":tree.tree_id},
+        "geometry":{"type":"Point",
+        "coordinates":[tree.longitude, tree.latitude]},
+        }  for tree in trees]
+        return jsonify({"type": "FeatureCollection","features":data})
 
 # Get specific trees by genus
 @app.route('/tree_inv/api/v0.1/genus/<genus>', methods=['GET'])
@@ -127,6 +177,25 @@ def get_tree(tree_id):
     else:
         data = []
     return jsonify({"type": "FeatureCollection","features":data})
+
+# Return all trees within specific ward
+@app.route('/tree_inv/api/v0.1/ward/<int:ward_num>')
+def ward_intersect(ward_num):
+    ward = session.query(Ward).get(ward_num)
+    trees = session.query(Tree).filter(Tree.geom.ST_Intersects(ward.geom)).all()
+    print(trees)
+
+    if trees != None:
+    	data = [{"type": "Feature",
+    	"properties":{"name":tree.name, "id":tree.tree_id},
+    	"geometry":{"type":"Point",
+    	"coordinates":[tree.longitude, tree.latitude]},
+    	}  for tree in trees]
+    	return jsonify({"type": "FeatureCollection","features":data})
+    else:
+        data = []
+    return jsonify({"type": "FeatureCollection", "features":data})
+
 
 @app.route('/geo-trees', methods=["GET","POST"])
 def GeoTrees():

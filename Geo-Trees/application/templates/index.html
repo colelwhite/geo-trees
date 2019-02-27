@@ -13,6 +13,8 @@
 
 
       <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.css" />
+      <link rel="stylesheet" href="../static/css/MarkerCluster.css" />
+      <link rel="stylesheet" href="../static/css/MarkerCluster.Default.css" />
       <link href="https://fonts.googleapis.com/css?family=Playball" rel="stylesheet">
       <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous"> -->
 
@@ -85,20 +87,13 @@
     <script src="../static/js/bootstrap.min.js"></script>
     <script src = "../static/js/main.js"></script>
     <script src="../static/js/leaflet.ajax.min.js"></script>
+    <script src="../static/js/markercluster.js"></script>
 
 <script>
     var map = L.map('map').setView([43.542003, -80.248199], 13);
+    var markers = L.markerClusterGroup();
 
     var tree_url = '../tree_inv/api/v0.1/tree';
-
-
-    var tree = new L.GeoJSON.AJAX(tree_url).bindPopup('Blah').addTo(map);
-
-    var poi_url = "https://opendata.arcgis.com/datasets/f6921c5b12e64d17b5cd173cafb23677_0.geojson"
-        var poi = new L.GeoJSON.AJAX(poi_url).addTo(map);
-
-
-    console.log(poi)
 
     	L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -106,15 +101,18 @@
     	minZoom: 1,
     	maxZoom: 18,
     	}).addTo(map);
-      //
-    	// L.marker([ form.latitude,form.longitude]).addTo(map)
-    	// 	.bindPopup("form.popup").openPopup();
 
-      // {% for tr in tree_pts %}
-      // L.marker([ {{tr.latitude}},{{tr.longitude}}]).addTo(map)
-      //   .bindPopup('{{tree_popup[loop.index]}}');
-      //   console.log('{{loop.index}}')
-      // {% endfor %}
+      var tree = new L.GeoJSON.AJAX(tree_url).addTo(markers);
+      // tree.addTo(map);
+markers.addTo(map);
+
+var tree = new L.GeoJSON.AJAX(tree_url,{
+                      middleware:function(data){
+                         return L.geoJson(data).addTo(markers);
+                      }
+                   });
+
+
 
 
     	var popup = L.popup();
