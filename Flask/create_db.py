@@ -23,7 +23,7 @@ engine = create_engine('postgresql://postgres:postgres@localhost:5433/guelph_tre
 
 # If the DB needs to be dropped and re-created (otherwise leave commented
 # out):
-# drop_database(engine.url)
+drop_database(engine.url)
 
 # Only run the script if the database doesn't exist
 if not database_exists(engine.url):

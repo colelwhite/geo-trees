@@ -171,7 +171,7 @@ class WaterCourse(Base):
 root = Tk()
 root.withdraw()
 
-treefile = "D:\\Winter2019\\Elective\\Project\\data2\\db_geometries\\tree_sample_2000.shp"
+treefile = "D:\\Winter2019\\Elective\\Project\\data2\\db_geometries\\tree_full.shp"
 cityfile = "D:\\Winter2019\\Elective\\Project\\data2\\db_geometries\\CityBoundary.shp"
 wardfile = "D:\\Winter2019\\Elective\\Project\\data2\\db_geometries\\Wards.shp"
 hoodfile = "D:\\Winter2019\\Elective\\Project\\data2\\db_geometries\\Neighbourhood_Groups.shp"
@@ -394,7 +394,7 @@ session.commit()
 for count, record in enumerate(tree_records):
     # Instantiate an tree from the Tree class and populate the fields
     tree = Tree()
-    tree.address = record[6]
+    tree.address = record[5]
     print(tree.address)
 
     # Get the geometry and insert as WKT. Populate other attribute values
@@ -403,13 +403,13 @@ for count, record in enumerate(tree_records):
     tree.longitude = float(point[0])
     tree.latitude = float(point[1])
     tree.tree_id = record[0]
-    tree.name = record[1]
-    tree.health = record[2]
-    tree.owner = record[3]
-    tree.ht_class = record[4]
-    tree.dbh = record[5]
-    tree.oh_util = record[7]
-    tree.comments = record[8]
+    tree.name = record[9]
+    tree.health = record[3]
+    tree.owner = record[4]
+    tree.ht_class = record[11]
+    tree.dbh = record[2]
+    tree.oh_util = record[8]
+    tree.comments = record[5]
     tree.geom = 'SRID=4326;POINT({0} {1})'.format(tree.longitude, tree.latitude)
     session.add(tree)
 
@@ -475,7 +475,7 @@ for count, record in enumerate(river_records):
     session.commit()
 session.commit()
 
-#
+
 # # Close the session and dispose of the engine connection to the database
 session.close()
 engine.dispose()
