@@ -44,10 +44,10 @@
         <a class="nav-link" id="ref-tab" data-toggle="tab" href="#ref" role="tab" aria-controls="ref" aria-selected="false">REST API Reference</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" id="vis-tab" data-toggle="tab" href="#vis" role="tab" aria-controls="vis" aria-selected="false">Visualization</a>
+        <a class="nav-link active" id="vis-tab" data-toggle="tab" href="#vis" role="tab" aria-controls="vis" aria-selected="false">Visualization Example</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Technical Documentation</a>
+        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Complete Technical Documentation</a>
       </li>
     </ul>
 
@@ -217,16 +217,30 @@ Example output for http://127.0.0.1:5000/tree_inv/api/v0.1/tree?genus=Gingko&hea
 }
 </pre>
 </p>
-
 <p class="body-text">
+<h2>Other Request Forms</h2>
+A known specimen may be queried by its ID number like so:
+</p>
+
+<p class="code=text">
+/tree_inv/api/v0.1/tree/<int:tree_id>
+</p>
+<p class="body-text">
+A specific ward may be queried by its number, returning all trees within that ward:
+</p>
+<p class="code=text">
+/tree_inv/api/v0.1/ward/<int:ward_num>
+</p>
+<p class="body-text">
+<h2>Use With Leaflet</h2>
 The following code demonstrates how the data might be incorporated into a web map using the Leaflet JavaScript library and Ajax:
 </p>
 
-<p class="code-text">
+
   <pre>
 var map = L.map('map').setView([43.542003, -80.248199], 13);
     	L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.{ext}', {
-    	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    	attribution: 'Map tiles by &lta href="http://stamen.com">Stamen Design&lt/a>, &lta href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0&lt/a> &mdash; Map data &copy; &lta href="https://www.openstreetmap.org/copyright">OpenStreetMap&lt/a> contributors',
     	subdomains: 'abcd',
     	minZoom: 1,
     	maxZoom: 18,
@@ -235,7 +249,7 @@ var map = L.map('map').setView([43.542003, -80.248199], 13);
 tree_url = 'http://127.0.0.1:5000/tree_inv/api/v0.1/tree?genus=Fraxinus&health=Poor&ward=1';
 var tree = new L.GeoJSON.AJAX(tree_url).addTo(map);
 </pre>
-</p>
+
 <p class="body-text">
 The Leaflet example on this page also demonstrates how interactive functionality could be added with the addition of a form for user input.
 
@@ -311,7 +325,23 @@ The Leaflet example on this page also demonstrates how interactive functionality
                                return L.geoJson(data, {
                                   onEachFeature: function (feature, layer) {
                                     layer.setIcon(treeIcon);
-                                    layer.bindPopup('<b>ID: </b>' + feature.properties.id + '<br/><b>Genus:</b> {{genus_id}}<br/><b>Health:</b> {{health_id}}<br/><b>Overhead Utilities Present?</b> {{oh_id}}');
+                                    (layer.bindPopup(
+                                    '<b>ID: </b>' +
+                                    feature.properties.ID +
+                                    '<br/><b>Common Name:</b> ' +
+                                    feature.properties.CommonName +
+
+                                    '<br/><b>Scientific Name: </b><i>' +
+                                    feature.properties.Genus + ' ' +
+                                    feature.properties.Species +
+                                    '</i><br/><b>Health: </b>'+
+                                    feature.properties.Health +
+                                    '<br/><b>Overhead Utilities Present? </b>'+
+                                    feature.properties.OverheadUtilities +
+                                    '<br/><b>Height Class: </b>' +
+                                    feature.properties.HeightClass +
+                                    '<br/><b>Coordinates: </b>' +
+                                    feature.geometry.coordinates));
                                   }
                                 }).addTo(markers);
                             }

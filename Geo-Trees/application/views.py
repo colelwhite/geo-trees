@@ -28,11 +28,6 @@ tree_args = {'ward': fields.Int(required=False),
              'division': fields.String(required=False),
              'oh_util': fields.String(required=False)}
 
-# @app.route("/hey")
-# @use_args(hello_args)
-# def index(args):
-#     return "Hello " + args["name"]
-
 # Redirect to the geo-trees url
 @app.route('/', methods=["GET"])
 def home():
@@ -55,16 +50,19 @@ def get_endpoints():
 
 def get_trees(**kwargs):
     results = (
-    session.query(Tree)
-    .join(Owner, Tree.owner == Owner.id)
-    .join(HtClass, Tree.ht_class == HtClass.id)
-    .join(Health, Tree.health == Health.id)
-    .join(OHUtil, Tree.oh_util == OHUtil.id)
+    session.query(Tree.geom, Tree.tree_id, CommonName.description, Genus.description,
+                  Species.description, Family.description, Division.description,
+                  HtClass.description, Health.description, OHUtil.description,
+                  Tree.longitude, Tree.latitude)
     .join(TreeTab, Tree.name == TreeTab.common_name)
     .join(CommonName, TreeTab.common_name == CommonName.id)
     .join(Genus, TreeTab.genus == Genus.id)
+    .join(Species, TreeTab.species == Species.id)
     .join(Family, Genus.family == Family.id)
     .join(Division, Family.division == Division.id)
+    .join(HtClass, Tree.ht_class == HtClass.id)
+    .join(Health, Tree.health == Health.id)
+    .join(OHUtil, Tree.oh_util == OHUtil.id)
     )
 
     # If ward has been specified, get only trees whose geometry falls within
@@ -101,67 +99,69 @@ def get_trees(**kwargs):
    # Combine the results of any filtering above
     results = results.all()
 
-    # If results are returned from filtering, serve them in JSON form
-    if results != None:
-        data = [{"type": "Feature",
-        "properties":{"name":item.name,
-                      "id":item.tree_id,
-                      },
-        "geometry":{"type":"Point",
-        "coordinates":[item.longitude, item.latitude]},
-        } for item in results]
-        return jsonify({"type": "FeatureCollection","features":data})
+   # Data to be converted to JSON
+    data = [{"type": "Feature",
+             "properties":{"ID":results[x][1],
+                           "CommonName":results[x][2],
+                           "Genus":results[x][3],
+                           "Species":results[x][4],
+                           "Family":results[x][5],
+                           "Division":results[x][6],
+                           "HeightClass":results[x][7],
+                           "Health":results[x][8],
+                           "OverheadUtilities":results[x][9]
+                          },
 
+             "geometry":{"type":"Point",
+                         "coordinates":[results[x][10],
+                                        results[x][11]]},
+             } for x, item in enumerate(results)]
 
-    # If no url arguments have been supplied, return the entire collection
-    else:
-        print('none')
-        print(kwargs)
-        results = session.query(Tree).all()
-
-        data = [{"type": "Feature",
-        "properties":{"name":results.name, "id":results.tree_id},
-        "geometry":{"type":"Point",
-        "coordinates":[results.longitude, results.latitude]},
-        }  for tree in results]
-        return jsonify({"type": "FeatureCollection","features":data})
+    return jsonify({"type": "FeatureCollection","features":data})
 
 # Get specific trees by genus
 @app.route('/tree_inv/api/v0.1/genus/<genus>', methods=['GET'])
 def get_trees_by_genus(genus):
     results = (
-    session.query(Tree, TreeTab, CommonName, Genus, Species, Family, Division,
-                  Owner, HtClass, Health, OHUtil)
-    .join(Owner, Tree.owner == Owner.id)
-    .join(HtClass, Tree.ht_class == HtClass.id)
-    .join(Health, Tree.health == Health.id)
-    .join(OHUtil, Tree.oh_util == OHUtil.id)
+    session.query(Tree.tree_id, CommonName.description, Genus.description,
+                  Species.description, Family.description, Division.description,
+                  HtClass.description, Health.description, OHUtil.description,
+                  Tree.longitude, Tree.latitude)
     .join(TreeTab, Tree.name == TreeTab.common_name)
     .join(CommonName, TreeTab.common_name == CommonName.id)
     .join(Genus, TreeTab.genus == Genus.id)
+    .join(Species, TreeTab.species == Species.id)
     .join(Family, Genus.family == Family.id)
     .join(Division, Family.division == Division.id)
+    .join(HtClass, Tree.ht_class == HtClass.id)
+    .join(Health, Tree.health == Health.id)
+    .join(OHUtil, Tree.oh_util == OHUtil.id)
     .filter(Genus.description == genus)
     .all()
     )
+    print(len(results))
+    print(results)
+
+    #results[x][0] = id, results[x][1] = common name desc
+    #results[x][2] = genus desc
 
     data = [{"type": "Feature",
-             "properties":{"Name":results[0].CommonName.description, "id":results[0].Tree.tree_id,
-                           "Genus":results[0].Genus.description,
-                           "Species":results[0].Species.description,
-                           "Family":results[0].Family.description,
-                           "Division":results[0].Division.description,
-                           "Owner":results[0].Owner.description,
-                           "HeightClass":results[0].HtClass.description,
-                           "DBH":results[0].Tree.dbh,
-                           "Health":results[0].Health.description,
-                           "OverheadUtilities":results[0].OHUtil.description,
-                           "Address":results[0].Tree.address,
-                           "Comments":results[0].Tree.comments},
+             "properties":{"ID":results[x][0],
+                           "CommonName":results[x][1],
+                           "Genus":results[x][2],
+                           "Species":results[x][3],
+                           "Family":results[x][4],
+                           "Division":results[x][5],
+                           "HeightClass":results[x][6],
+                           "Health":results[x][7],
+                           "OverheadUtilities":results[x][8]
+                          },
+
              "geometry":{"type":"Point",
-                         "coordinates":[results[0].Tree.longitude,
-                                        results[0].Tree.latitude]},
-             } for item in results]
+                         "coordinates":[results[x][9],
+                                        results[x][10]]},
+             } for x, item in enumerate(results)]
+
     return jsonify({"type": "FeatureCollection","features":data})
 
 # Get specific tree by ID number
