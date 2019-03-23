@@ -15,8 +15,8 @@
       <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.css" />
       <link rel="stylesheet" href="../static/css/MarkerCluster.css" />
       <link rel="stylesheet" href="../static/css/MarkerCluster.Default.css" />
-      <link href="https://fonts.googleapis.com/css?family=Playball" rel="stylesheet">
-      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous"> -->
+      <link href="https://fonts.googleapis.com/css?family=Playball|Roboto+Mono" rel="stylesheet">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
        integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
@@ -33,17 +33,18 @@
     <div class="container-fluid">
       <h3>Geospatial Web Frameworks with Relational Databases and Python</h3>
     </div>
+    <br/>
     <div class="container main-div">
 
     <ul class="nav nav-tabs" id="myTab" role="tablist">
       <li class="nav-item">
-        <a class="nav-link active" id="into-tab" data-toggle="tab" href="#intro" role="tab" aria-controls="intro" aria-selected="true">Introduction</a>
+        <a class="nav-link" id="into-tab" data-toggle="tab" href="#intro" role="tab" aria-controls="intro" aria-selected="true">Introduction</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">REST API Reference</a>
+        <a class="nav-link" id="ref-tab" data-toggle="tab" href="#ref" role="tab" aria-controls="ref" aria-selected="false">REST API Reference</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" id="vis-tab" data-toggle="tab" href="#vis" role="tab" aria-controls="vis" aria-selected="false">Visualization</a>
+        <a class="nav-link active" id="vis-tab" data-toggle="tab" href="#vis" role="tab" aria-controls="vis" aria-selected="false">Visualization</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Technical Documentation</a>
@@ -54,23 +55,209 @@
     <div class="tab-content" id="myTabContent">
       <div class="tab-pane fade" id="intro" role="tabpanel" aria-labelledby="intro-tab">
         <p class="body-text">
-          Bleh
+          How can emerging open source technologies be used to create functional, dynamic spatial applications for the web?
+<br/><br/>
+To provide one answer to this question, this Python web app, which takes advantage of functionality provided by Flask and PostGIS, as well as several other third-party modules, was developed to model a compelling industry use-case.
+<br/><br/>
+This app displays the contents of a relational spatial database using the Leaflet web mapping library. Using the same database, a functional spatial REST API has also been constructed to return the results of user-defined queries in GeoJSON form. This application was developed locally on a Centre of Geographic Sciences student laptop and then deployed to a live production environment allowing it to be accessed via the internet.
+<br/><br/>
+This product is produced as a portion of the requirements of the Geographic Sciences Program at the Centre of Geographic Sciences, NSCC, Lawrencetown, Nova Scotia. The product is unedited, unverified and intended for educational purposes only. © 2019 COGS
+<br/><br/>
+Produced by: Nicole White
+<br/>
+Date: March 2019
           </p>
-
-
+          <img src="../static/img/cogs.png" width=200>
 
       </div>
+
+      <div class="tab-pane fade" id="ref" role="tabpanel" aria-labelledby="ref-tab">
+        <p class="body-text">
+          <h2>Guelph Urban Tree Visualization API Reference</h2>
+
+          This API provides tree inventory details for the city of Guelph, Wellington County, Ontario.
+<br/><br/>
+<h2>Sample Request and Reponse</h2>
+
+The following example requests all ash (<i>Fraxinus</i> genus) trees in poor health, within Ward 1. This query could be used to identify specimens vulnerable to the Emerald Ash Borer, informing pest management strategies.
+<br/><br/>
+http://127.0.0.1:5000/tree_inv/api/v0.1/tree?genus=Fraxinus&health=Poor&ward=1
+<br/><br/>
+This request can be tested by entering it as a URL in your web browser.
+<br/><br/>
+<h2>Guide</h2>
+An API request uses the following form:
+<br/><br/>
+http://127.0.0.1:5000/tree_inv/api/v0.1/tree?parameters
+<br/><br/>
+Please ensure that the URL is properly encoded, with no invalid characters. Any number of additional parameters may be added using the & symbol. All parameters are optional, and if none are supplied, the entire tree inventory dataset will be returned.
+<br/><br/>
+The following parameters are available:
+<br/><br/>
+<b>common_name</b> - Tree species common name, e.g., <i>Kentucky Coffee Tree</i>
+<br/>
+<b>genus</b> - Genus to which the specimen belongs, e.g., <i>Acer</i> for maple.
+<br/>
+<b>species</b> - The botanical species name of the tree, e.g., <i>saccharinum</i> is the species name for sugar maple. This parameter is most effective when a genus is also specified, due to completely different populations that share a species name (e.g., Red Maple, Acer rubrum, and Red Mulberry, Morus rubrum.)
+<br/>
+<b>family</b> - The name of a specimens' botanical family. Example: <i>Rosaceae</i>, the rose family, includes apples, peaches, and plums.
+<br/>
+<b>division</b> - This parameter has four possible options:
+<ul>
+  <i>
+<li>Magnoliophyta (Flowering Plants)
+<li>Coniferophyta (Conifers)
+<li>Other
+<li>Unknown
+</i>
+</ul>
+Note: Some browsers may require that the spaces be replaced with %20, i.e., Magnoliophyta%20(Flowering%20Plants)
+<br/><br/>
+<b>owner</b> - Possible inputs:
+<ul>
+  <i>
+<li>Boundary
+<li>City
+<li>Private
+<li>Unknown
+</i>
+</ul>
+<br/><br/>
+<b>health</b> - Possible inputs:
+<ul>
+  <i>
+<li>Excellent
+<li>Good
+<li>Fair
+<li>Poor
+<li>Dead
+</i>
+</ul>
+<br/><br/>
+<b>ward</b>
+The municipal ward area the tree can be found in. This is an integer value from 1 to 6, representing the ward's ID number. Performs a geometric intersection of a polygon wards layer to retrieve the results dynamically.
+<br/><br/>
+<b>oh_util</b> - Are overhead utilities (power lines, etc.) present?
+<ul>
+  <i>
+<li>Yes
+<li>No
+<li>Unknown
+</i>
+</ul>
+<br/><br/>
+<h2>Responses</h2>
+<br/>
+Responses are served in GeoJSON format and are ready to be used within a desktop GIS client or within a web map.
+<br/><br/>
+Example output for http://127.0.0.1:5000/tree_inv/api/v0.1/tree?genus=Gingko&health=Excellent&ward=1:
+</p>
+<p class="code-text">
+  <pre>
+{
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          -80.220270197,
+          43.561350074
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "id": 208,
+        "name": 121
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.236551202,
+          43.55716402
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "id": 1657,
+        "name": 121
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.22269701,
+          43.559982509
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "id": 1693,
+        "name": 22
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.21558168,
+          43.574105444
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "id": 1776,
+        "name": 121
+      },
+      "type": "Feature"
+    }
+  ],
+  "type": "FeatureCollection"
+}
+</pre>
+</p>
+
+<p class="body-text">
+The following code demonstrates how the data might be incorporated into a web map using the Leaflet JavaScript library and Ajax:
+</p>
+
+<p class="code-text">
+  <pre>
+var map = L.map('map').setView([43.542003, -80.248199], 13);
+    	L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.{ext}', {
+    	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    	subdomains: 'abcd',
+    	minZoom: 1,
+    	maxZoom: 18,
+      ext: 'png'
+    	}).addTo(map);
+tree_url = 'http://127.0.0.1:5000/tree_inv/api/v0.1/tree?genus=Fraxinus&health=Poor&ward=1';
+var tree = new L.GeoJSON.AJAX(tree_url).addTo(map);
+</pre>
+</p>
+<p class="body-text">
+The Leaflet example on this page also demonstrates how interactive functionality could be added with the addition of a form for user input.
+
+        </p>
+      </div>
+
       <div class="tab-pane fade show active" id="vis" role="tabpanel" aria-labelledby="vis-tab">
 
 <div id="map"></div>
 
-<!-- <form method="post" class="form">
-  <h3>form.description</h3>
-  form.selections(class_='form-control',placeholder="")
+<form method="post" class="form">
+  <h3>{{form.description}}</h3>
+  Genus:
+  {{form.select_genus(class_='form-control')}}
+  Health:
+  {{form.select_health(class_='form-control')}}
+  Overhead Utilities Present:
+  {{form.select_oh(class_='form-control')}}
   <br>
   <input type="submit" value="Find Data">
 
-</form> -->
+</form>
 
       </div>
 
@@ -90,29 +277,50 @@
     <script src="../static/js/markercluster.js"></script>
 
 <script>
+
     var map = L.map('map').setView([43.542003, -80.248199], 13);
     var markers = L.markerClusterGroup();
+    var tree_url = '../tree_inv/api/v0.1/tree?';
 
-    var tree_url = '../tree_inv/api/v0.1/tree';
+    // Build the url from the user form
+    console.log('{{genus_id}} genusid')
+    if ('{{genus_id}}'.length > 0) {
+      tree_url += 'genus={{genus_id}}&'
+    }
+    if ('{{health_id}}'.length > 0) {tree_url += 'health={{health_id}}&'}
+    if ('{{oh_id}}'.length >0) {tree_url += 'oh_util={{oh_id}}'}
 
-    	L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    console.log(tree_url)
+
+    	L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.{ext}', {
+    	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     	subdomains: 'abcd',
     	minZoom: 1,
     	maxZoom: 18,
+      ext: 'png'
     	}).addTo(map);
 
-      var tree = new L.GeoJSON.AJAX(tree_url).addTo(markers);
-      // tree.addTo(map);
+      var treeIcon = L.icon({
+          iconUrl: '../static/img/tree.png',
+
+      });
+
+      // var tree = new L.GeoJSON.AJAX(tree_url).addTo(markers);
+      var tree = new L.GeoJSON.AJAX(tree_url,{
+                            middleware:function(data){
+                               return L.geoJson(data, {
+                                  onEachFeature: function (feature, layer) {
+                                    layer.setIcon(treeIcon);
+                                    layer.bindPopup('<b>ID: </b>' + feature.properties.id + '<br/><b>Genus:</b> {{genus_id}}<br/><b>Health:</b> {{health_id}}<br/><b>Overhead Utilities Present?</b> {{oh_id}}');
+                                  }
+                                }).addTo(markers);
+                            }
+                         });
+
+
+
+
 markers.addTo(map);
-
-var tree = new L.GeoJSON.AJAX(tree_url,{
-                      middleware:function(data){
-                         return L.geoJson(data).addTo(markers);
-                      }
-                   });
-
-
 
 
     	var popup = L.popup();
