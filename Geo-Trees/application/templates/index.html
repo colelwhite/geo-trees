@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 
 <html>
+
+
   <head>
   	<meta charset="UTF-8" />
   	<title>Geospatial Web Frameworks with Relational Databases and Python</title>
@@ -15,6 +17,7 @@
       <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.css" />
       <link rel="stylesheet" href="../static/css/MarkerCluster.css" />
       <link rel="stylesheet" href="../static/css/MarkerCluster.Default.css" />
+      <!-- <link rel="stylesheet" href="../static/css/spin.css" /> -->
       <link href="https://fonts.googleapis.com/css?family=Playball|Roboto+Mono" rel="stylesheet">
       <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 
@@ -25,6 +28,8 @@
       <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
         integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
         crossorigin=""></script>
+
+
 
       <link rel="stylesheet" type="text/css" href="../static/css/main.css" />
   </head>
@@ -81,14 +86,14 @@ Date: March 2019
 
 The following example requests all ash (<i>Fraxinus</i> genus) trees in poor health, within Ward 1. This query could be used to identify specimens vulnerable to the Emerald Ash Borer, informing pest management strategies.
 <br/><br/>
-http://127.0.0.1:5000/tree_inv/api/v0.1/tree?genus=Fraxinus&health=Poor&ward=1
+http://nico13.xyz/tree_inv/api/v0.1/tree?genus=Fraxinus&health=Poor&ward=1
 <br/><br/>
 This request can be tested by entering it as a URL in your web browser.
 <br/><br/>
 <h2>Guide</h2>
 An API request uses the following form:
 <br/><br/>
-http://127.0.0.1:5000/tree_inv/api/v0.1/tree?parameters
+http://nico13.xyz/tree_inv/api/v0.1/tree?parameters
 <br/><br/>
 Please ensure that the URL is properly encoded, with no invalid characters. Any number of additional parameters may be added using the & symbol. All parameters are optional, and if none are supplied, the entire tree inventory dataset will be returned.
 <br/><br/>
@@ -246,8 +251,11 @@ var map = L.map('map').setView([43.542003, -80.248199], 13);
     	maxZoom: 18,
       ext: 'png'
     	}).addTo(map);
-tree_url = 'http://127.0.0.1:5000/tree_inv/api/v0.1/tree?genus=Fraxinus&health=Poor&ward=1';
+tree_url = 'http://nico13.xyz/tree_inv/api/v0.1/tree?genus=Fraxinus&health=Poor&ward=1';
 var tree = new L.GeoJSON.AJAX(tree_url).addTo(map);
+
+
+
 </pre>
 
 <p class="body-text">
@@ -289,22 +297,25 @@ The Leaflet example on this page also demonstrates how interactive functionality
     <script src = "../static/js/main.js"></script>
     <script src="../static/js/leaflet.ajax.min.js"></script>
     <script src="../static/js/markercluster.js"></script>
+    <script src="../static/js/leaflet.spin.min.js" charset="utf-8"></script>
+      <script src="../static/js/spin.min.js" charset="utf-8"></script>
+
 
 <script>
 
+window.onload = function () {
+
     var map = L.map('map').setView([43.542003, -80.248199], 13);
+
     var markers = L.markerClusterGroup();
     var tree_url = '../tree_inv/api/v0.1/tree?';
 
     // Build the url from the user form
-    console.log('{{genus_id}} genusid')
     if ('{{genus_id}}'.length > 0) {
       tree_url += 'genus={{genus_id}}&'
     }
     if ('{{health_id}}'.length > 0) {tree_url += 'health={{health_id}}&'}
     if ('{{oh_id}}'.length >0) {tree_url += 'oh_util={{oh_id}}'}
-
-    console.log(tree_url)
 
     	L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.{ext}', {
     	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -319,51 +330,43 @@ The Leaflet example on this page also demonstrates how interactive functionality
 
       });
 
-      // var tree = new L.GeoJSON.AJAX(tree_url).addTo(markers);
-      var tree = new L.GeoJSON.AJAX(tree_url,{
-                            middleware:function(data){
-                               return L.geoJson(data, {
-                                  onEachFeature: function (feature, layer) {
-                                    layer.setIcon(treeIcon);
-                                    (layer.bindPopup(
-                                    '<b>ID: </b>' +
-                                    feature.properties.ID +
-                                    '<br/><b>Common Name:</b> ' +
-                                    feature.properties.CommonName +
+      map.spin(true);
 
-                                    '<br/><b>Scientific Name: </b><i>' +
-                                    feature.properties.Genus + ' ' +
-                                    feature.properties.Species +
-                                    '</i><br/><b>Health: </b>'+
-                                    feature.properties.Health +
-                                    '<br/><b>Overhead Utilities Present? </b>'+
-                                    feature.properties.OverheadUtilities +
-                                    '<br/><b>Height Class: </b>' +
-                                    feature.properties.HeightClass +
-                                    '<br/><b>Coordinates: </b>' +
-                                    feature.geometry.coordinates));
-                                  }
-                                }).addTo(markers);
-                            }
-                         });
+      setTimeout(function () {
+        var tree = new L.GeoJSON.AJAX(tree_url,{
+                              middleware:function(data){
+                                 return L.geoJson(data, {
+                                    onEachFeature: function (feature, layer) {
+                                      layer.setIcon(treeIcon);
+                                      (layer.bindPopup(
+                                      '<b>ID: </b>' +
+                                      feature.properties.ID +
+                                      '<br/><b>Common Name:</b> ' +
+                                      feature.properties.CommonName +
 
+                                      '<br/><b>Scientific Name: </b><i>' +
+                                      feature.properties.Genus + ' ' +
+                                      feature.properties.Species +
+                                      '</i><br/><b>Health: </b>'+
+                                      feature.properties.Health +
+                                      '<br/><b>Overhead Utilities Present? </b>'+
+                                      feature.properties.OverheadUtilities +
+                                      '<br/><b>Height Class: </b>' +
+                                      feature.properties.HeightClass +
+                                      '<br/><b>Coordinates: </b>' +
+                                      feature.geometry.coordinates));
+                                    }
+                                  }).addTo(markers);
+                              }
+                           });
+  markers.addTo(map);
+          map.spin(false);
+      }, 3000);
+    };
 
-
-
-markers.addTo(map);
-
-
-    	var popup = L.popup();
-    	function showMapClick(e) {
-    		popup
-    			.setLatLng(e.latlng)
-    			.setContent("You clicked the map at " + e.latlng.toString())
-    			.openOn(map);
-    	}
-    	map.on('click', showMapClick);
     </script>
 
-
-
 	</body>
+
+
 </html>
